@@ -1,17 +1,20 @@
 from flask import Flask, request, render_template, redirect, url_for
 from werkzeug.utils import secure_filename
-from PIL import Image
+from PIL import Image, ImageDraw, ImageFont
 from lib.delete import delete_all_in_folder, delete_specific_file
 from lib.images import get_image_files
 from lib.getDots import count_red_dots, count_green_dots, count_overlapping_green_red_dots
 import os
 import json
+import uuid
 
 app = Flask(__name__)
 
 # Set the upload folder
 UPLOAD_FOLDER = 'uploads'
+RESULT_FOLDER = 'results'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+app.config['RESULT_FOLDER'] = RESULT_FOLDER
 
 # Allowed extensions
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
@@ -44,12 +47,15 @@ def upload_file():
             # getting length of list
             result = []
             length = len(image_files)
-            dictKey = ["red", "green", "overlapping"]
+            dictKey = ["red", "green", "overlapping", "image_original", "image_result"]
             for i in range(length):
                 countRedDot = count_red_dots(os.path.join(app.config['UPLOAD_FOLDER'], image_files[i]))
                 countGreenDot = count_green_dots(os.path.join(app.config['UPLOAD_FOLDER'], image_files[i]))
                 countOverlapping = count_overlapping_green_red_dots(os.path.join(app.config['UPLOAD_FOLDER'], image_files[i]))
-                dots = [countRedDot, countGreenDot, countOverlapping]
+                write_text_on_image(os.path.join(app.config['UPLOAD_FOLDER'], image_files[i]), os.path.join(app.config['RESULT_FOLDER'], image_files[i]), str(countOverlapping), str(countGreenDot), str(countRedDot))
+                picOriginal = os.path.join(app.config['UPLOAD_FOLDER'], image_files[i])
+                picResult = os.path.join(app.config['RESULT_FOLDER'], image_files[i])
+                dots = [countRedDot, countGreenDot, countOverlapping, picOriginal, picResult]
                 result.append(dict(zip(dictKey, dots)))
 
             # return 'File uploaded successfully'
@@ -101,6 +107,56 @@ def split_image(image_path):
     except Exception as e:
         print(f"An error occurred: {e}")
 
+# Function for generating a unique identifier
+def generate_uid():
+    """
+    Generates a unique identifier using UUID.
+    Returns:
+    - str: A unique identifier as a string.
+    """
+    return str(uuid.uuid4())
+
+def write_text_on_image(image_path, output_path, text2, text3, text4, font_path=None, font_size=5):
+    """
+    Writes text on an image and saves it to a specified output path.
+    Parameters:
+    - image_path (str): Path to the input image.
+    - text (str): Text to write on the image.
+    - output_path (str): Path to save the output image.
+    - position (tuple): (x, y) position of the text on the image.
+    - font_path (str): Path to a .ttf font file. If None, a default font is used.
+    - font_size (int): Size of the font.
+    - text_color (tuple): Color of the text in RGB format.
+    """
+    # Open the image
+    image = Image.open(image_path)
+
+    # Create a drawing context
+    draw = ImageDraw.Draw(image)
+
+    # Load the font
+    if font_path:
+        font = ImageFont.truetype(font_path, font_size)
+    else:
+        font = ImageFont.load_default()
+
+    # Add text to the image
+    position2 = (140, 5)
+    text_color2 = (255, 255, 255) # white
+    draw.text(position2, text2, font=font, fill=text_color2)
+
+    position3 = (5, 130)
+    text_color3 = (0, 102, 0) # green
+    draw.text(position3, text3, font=font, fill=text_color3)
+
+    position4 = (140, 130)
+    text_color4 = (255, 0, 0) # red
+    draw.text(position4, text4, font=font, fill=text_color4)
+
+    # Save the modified image
+    image.save(output_path)
+
+    print(f"Image saved to {output_path}")
 
 
 if __name__ == '__main__':

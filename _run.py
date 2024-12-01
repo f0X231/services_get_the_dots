@@ -1,12 +1,13 @@
 from flask import Flask, request, render_template, redirect, url_for
 from werkzeug.utils import secure_filename
 from PIL import Image, ImageDraw, ImageFont
-from lib.delete import delete_all_in_folder, delete_specific_file
+from lib.base import delete_all_in_folder, delete_specific_file
 from lib.images import get_image_files
 from lib.getDots import count_red_dots, count_green_dots, count_overlapping_green_red_dots
 import os
 import json
 import uuid
+from datetime import datetime
 
 app = Flask(__name__)
 
@@ -26,7 +27,8 @@ def allowed_file(filename):
 def upload_file():
     if request.method == 'POST':
         # Delete all files in the upload folder
-        delete_all_in_folder(app.config['UPLOAD_FOLDER'])
+        # delete_all_in_folder(app.config['UPLOAD_FOLDER'])
+        today = datetime.datetime.now().strftime('%Y%m%d')
 
         # Check if the post request has the file part
         if 'file' not in request.files:
@@ -59,6 +61,7 @@ def upload_file():
                 result.append(dict(zip(dictKey, dots)))
 
             # return 'File uploaded successfully'
+            log_to_daily_file(result)
             json_string = json.dumps(result, indent=4)
             return json_string
     return '''
@@ -157,6 +160,39 @@ def write_text_on_image(image_path, output_path, text2, text3, text4, font_path=
     image.save(output_path)
 
     print(f"Image saved to {output_path}")
+
+"""
+Descriptions: Appends JSON data to a daily log file.
+Args:
+    data (dict): The data to log, must be JSON-serializable.
+    log_dir (str): Directory where the log files will be stored. Default is 'logs'.
+Returns:
+    str: Path to the log file.
+"""
+def log_to_daily_file(data, log_dir="logs"):
+    # Ensure the log directory exists
+    os.makedirs(log_dir, exist_ok=True)
+
+    # Create the log file name based on the current date
+    current_date = datetime.now().strftime("%Y-%m-%d")
+    log_file = os.path.join(log_dir, f"log_{current_date}.json")
+
+    # Append the data as a new JSON object to the log file
+    with open(log_file, "a") as f:
+        json_entry = json.dumps(data, ensure_ascii=False)
+        f.write(json_entry + "\n")
+    
+    return log_file
+
+"""
+Descriptions: Check if a file exists.
+Args: 
+    file_path (str): The path to the file to check.
+Returns: 
+    bool: True if the file exists, False otherwise.
+"""
+def is_file_exists(file_path):
+    return os.path.isfile(file_path)
 
 
 if __name__ == '__main__':

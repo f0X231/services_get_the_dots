@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Drag and Drop File Upload</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f4f4f9;
+        }
+
+        .upload-container {
+            text-align: center;
+        }
+
+        .drop-area {
+            border: 2px dashed #6c63ff;
+            border-radius: 5px;
+            padding: 20px;
+            margin: 20px 0;
+            cursor: pointer;
+            background-color: #fff;
+        }
+
+        .drop-area.dragover {
+            border-color: #4caf50;
+            background-color: #e8f5e9;
+        }
+
+        #fileInput {
+            display: none;
+        }
+
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            background-color: #6c63ff;
+            color: #fff;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #5752d3;
+        }
+    </style>
+</head>
+<body>
+    <div class="upload-container">
+        <h2>Drag and Drop File Upload</h2>
+        <div id="drop-area" class="drop-area">
+            <p>Drag and drop your file here or click to upload</p>
+            <input type="file" id="fileInput" name="file" id="file" multiple>
+        </div>
+        <button id="uploadBtn">Upload</button>
+    </div>
+    
+    <script>
+        const dropArea = document.getElementById('drop-area');
+        const fileInput = document.getElementById('fileInput');
+        const uploadBtn = document.getElementById('uploadBtn');
+        let files = [];
+
+        dropArea.addEventListener('dragover', (event) => {
+            event.preventDefault();
+            dropArea.classList.add('dragover');
+        });
+
+        dropArea.addEventListener('dragleave', () => {
+            dropArea.classList.remove('dragover');
+        });
+
+        dropArea.addEventListener('drop', (event) => {
+            event.preventDefault();
+            dropArea.classList.remove('dragover');
+            files = event.dataTransfer.files;
+            console.log('Files:', files);
+        });
+
+        dropArea.addEventListener('click', () => {
+            fileInput.click();
+        });
+
+        fileInput.addEventListener('change', (event) => {
+            files = event.target.files;
+            console.log('Files:', files);
+        });
+
+        uploadBtn.addEventListener('click', () => {
+            if (files.length === 0) {
+                alert('Please select a file.');
+                return;
+            }
+            const formData = new FormData();
+            for (const file of files) {
+                formData.append('files', file);
+            }
+            fetch('/upload', {
+                method: 'POST',
+                body: formData,
+            })
+            .then(async (response) => {
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    alert(`Error: ${errorData.error}`);
+                    return;
+                }
+                const data = await response.json();
+                alert(data.message);
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred during upload.');
+            });
+        });
+    </script>
+</body>
+</html>

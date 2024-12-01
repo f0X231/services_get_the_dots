@@ -121,7 +121,7 @@ def save():
             result.append(dict(zip(dictKey, dots)))
 
         log_to_daily_file(dataId, result)
-        return jsonify(result)
+        return jsonify({"id": dataId, "data": result})
     else:
         return redirect(url_for('upload'))
 
@@ -131,7 +131,7 @@ def result(id):
     if is_file_exists(logFile):
         data = read_file_last_line(logFile)
         if data is not None:
-            return jsonify(data)
+            return jsonify({"id": id, "data": data})
         else:
             return 'NOT FOUND'
     else:

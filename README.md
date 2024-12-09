@@ -1,4 +1,6 @@
 - Virtual env
+pip install virtualenv : install virtualenv 
+$ python<version> -m venv <virtual-environment-name> : Creating a new virtualenv
 $ virtualenv <NEWVIRTUALENV> : Creating a new virtualenv
 $ source <NEWVIRTUALENV>/bin/activate : Activating that new virtualenv
 

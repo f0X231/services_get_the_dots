@@ -48,7 +48,7 @@
                                                 {% for item in data.results[i] %}
                                                     <tr>
                                                         <th>
-                                                            <img src="/{{ item.image }}" width="100%" />
+                                                            <img src="/{{ item.image.replace('services_get_the_dots/', '') }}" width="100%" />
                                                             <input type="hidden" name="imagepath[{{i}}][]" value="{{ item.image }}" />
                                                         </th>
                                                         <td>
@@ -91,7 +91,7 @@
                                     {% for item in data.results %}
                                         <tr>
                                             <th>
-                                                <img src="/{{ item.image }}" width="100%" />
+                                                <img src="/{{ item.image.replace('services_get_the_dots/', '') }}" width="100%" />
                                                 <input type="hidden" name="imagepath[0][]" value="{{ item.image }}" />
                                             </th>
                                             <td>

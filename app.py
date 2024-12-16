@@ -10,9 +10,9 @@ from lib.files import log_to_daily_file, read_json_file, is_file_exists, read_fi
 from lib.getDots import count_red_dots, count_green_dots, count_overlapping_green_red_dots
 
 app = Flask(__name__, template_folder='templates', static_url_path='/static')
-BASE_DIRECTORY_UPLOAD_FOLDER = 'uploads/'
-BASE_DIRECTORY_RESULT_FOLDER = 'static/images/origin'
-BASE_DIRECTORY_LRESULT_FOLDER = 'static/images/results'
+BASE_DIRECTORY_UPLOAD_FOLDER = 'services_get_the_dots/uploads/'
+BASE_DIRECTORY_RESULT_FOLDER = 'services_get_the_dots/static/images/origin'
+BASE_DIRECTORY_LRESULT_FOLDER = 'services_get_the_dots/static/images/results'
 
 
 @app.route('/get', methods=['GET', 'POST'])
@@ -111,7 +111,7 @@ def proof(id):
             listFileName = []
             dataOverall = []
             for filename in logid:
-                logFile = "logs/log_" + filename + ".json"
+                logFile = "services_get_the_dots/logs/log_" + filename + ".json"
                 if is_file_exists(logFile):
                     chkFileInFolder += 1
                     listFileName.append(filename)
@@ -123,7 +123,7 @@ def proof(id):
             else:
                 return redirect(url_for('upload'))
         else:
-            logFile = "logs/log_" + id + ".json"
+            logFile = "services_get_the_dots/logs/log_" + id + ".json"
             if is_file_exists(logFile):
                 data = read_json_file(logFile)
                 return render_template('checklist.html', data={"id":id, "results":data, "length": 1})
@@ -168,7 +168,7 @@ def save():
 
 @app.route('/result/<string:id>', methods=['GET'])
 def result(id):
-    logFile = "logs/log_" + id + ".json"
+    logFile = "services_get_the_dots/logs/log_" + id + ".json"
     if is_file_exists(logFile):
         data = read_file_last_line(logFile)
         if data is not None:

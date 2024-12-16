@@ -11,8 +11,8 @@ from lib.getDots import count_red_dots, count_green_dots, count_overlapping_gree
 
 app = Flask(__name__, template_folder='templates', static_url_path='/static')
 BASE_DIRECTORY_UPLOAD_FOLDER = 'services_get_the_dots/uploads/'
-BASE_DIRECTORY_RESULT_FOLDER = 'services_get_the_dots/static/images/origin'
-BASE_DIRECTORY_LRESULT_FOLDER = 'services_get_the_dots/static/images/results'
+BASE_DIRECTORY_RESULT_FOLDER = 'static/images/origin'
+BASE_DIRECTORY_LRESULT_FOLDER = 'static/images/results'
 
 
 @app.route('/get', methods=['GET', 'POST'])

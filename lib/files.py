@@ -29,7 +29,7 @@ Args:
 Returns:
     str: Path to the log file.
 """
-def log_to_daily_file(filename, data, log_dir="logs"):
+def log_to_daily_file(filename, data, log_dir="services_get_the_dots/logs"):
     # Ensure the log directory exists
     os.makedirs(log_dir, exist_ok=True)
 

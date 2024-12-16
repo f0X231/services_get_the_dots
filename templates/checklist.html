@@ -11,51 +11,132 @@
             <div class="col">
                 <h1 class="text-center pt-4">PROOF DATA</h1>
                 <form action="/save" method="post">
-                    <input type="hidden" name="fileid" id="fileid" value="{{data.id}}" />
-                    <div class="container table-responsive py-5"> 
-                        <table class="table table-bordered table-hover">
-                            <thead class="thead-dark">
-                                <tr>
-                                <th scope="col">IMAGE</th>
-                                <th scope="col">RED</th>
-                                <th scope="col">GREEN</th>
-                                <th scope="col">OVERLAP</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for item in data.results %}
-                                    <tr>
-                                        <th>
-                                            <img src="/{{ item.image }}" width="100%" />
-                                            <input type="hidden" name="imagepath[]" value="{{ item.image }}" />
-                                        </th>
-                                        <td>
-                                            <div class="input-group mb-3">
-                                                <span class="input-group-text" id="inputGroup-sizing-default">RED</span>
-                                                <input name="red[]" type="text" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default" value="{{ item.red }}">
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <div class="input-group mb-3">
-                                                <span class="input-group-text" id="inputGroup-sizing-default">GREEN</span>
-                                                <input name="green[]" type="text" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default" value="{{ item.green }}">
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <div class="input-group mb-3">
-                                                <span class="input-group-text" id="inputGroup-sizing-default">OVERLAP</span>
-                                                <input name="overlap[]" type="text" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default" value="{{ item.overlapping }}">
-                                            </div>
-                                        </td>
-                                    </tr>
+                    <div class="container table-responsive py-5">
+                        <input type="hidden" name="datalength" id="datalength" value="{{data.length}}" />
+                        {% if data.length > 1 %}
+                            <ul class="nav nav-tabs">
+                                {% for i in range(0, data.length): %}
+                                    <input type="hidden" name="fileid[]" value="{{data.id[i]}}" />
+                                    {% if i == 0 %}
+                                        <li class="active">
+                                            <a href="#{{i}}" id="{{i}}" data-toggle="tab"><button type="button" class="btn btn-light m-2 bg-secondary"> Pic #{{i+1}} </button></a>
+                                        </li>
+                                    {% else %}
+                                        <li>
+                                            <a href="#{{i}}" id="{{i}}" data-toggle="tab"><button type="button" class="btn btn-light m-2"> Pic #{{i+1}} </button></a>
+                                        </li>
+                                    {% endif %}
                                 {% endfor %}
-                            </tbody>
-                        </table>
+                            </ul>
+                            <div class="tab-content">
+                                {% for i in range(0, data.length): %}
+                                    {% if i == 0 %}
+                                        <div class="tab-pane active" id="tab-{{i}}">
+                                    {% else %}
+                                        <div class="tab-pane" id="tab-{{i}}">
+                                    {% endif %}
+                                        <table class="table table-bordered table-hover">
+                                            <thead class="thead-dark">
+                                                <tr>
+                                                <th scope="col">IMAGE</th>
+                                                <th scope="col">RED</th>
+                                                <th scope="col">GREEN</th>
+                                                <th scope="col">OVERLAP</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% for item in data.results[i] %}
+                                                    <tr>
+                                                        <th>
+                                                            <img src="/{{ item.image }}" width="100%" />
+                                                            <input type="hidden" name="imagepath[{{i}}][]" value="{{ item.image }}" />
+                                                        </th>
+                                                        <td>
+                                                            <div class="input-group mb-3">
+                                                                <span class="input-group-text" id="inputGroup-sizing-default">RED</span>
+                                                                <input name="red[{{i}}][]" type="text" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default" value="{{ item.red }}">
+                                                            </div>
+                                                        </td>
+                                                        <td>
+                                                            <div class="input-group mb-3">
+                                                                <span class="input-group-text" id="inputGroup-sizing-default">GREEN</span>
+                                                                <input name="green[{{i}}][]" type="text" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default" value="{{ item.green }}">
+                                                            </div>
+                                                        </td>
+                                                        <td>
+                                                            <div class="input-group mb-3">
+                                                                <span class="input-group-text" id="inputGroup-sizing-default">OVERLAP</span>
+                                                                <input name="overlap[{{i}}][]" type="text" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default" value="{{ item.overlapping }}">
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                {% endfor %}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            <input type="hidden" name="fileid[]" value="{{data.id}}" />
+                            <table class="table table-bordered table-hover">
+                                <thead class="thead-dark">
+                                    <tr>
+                                    <th scope="col">IMAGE</th>
+                                    <th scope="col">RED</th>
+                                    <th scope="col">GREEN</th>
+                                    <th scope="col">OVERLAP</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for item in data.results %}
+                                        <tr>
+                                            <th>
+                                                <img src="/{{ item.image }}" width="100%" />
+                                                <input type="hidden" name="imagepath[0][]" value="{{ item.image }}" />
+                                            </th>
+                                            <td>
+                                                <div class="input-group mb-3">
+                                                    <span class="input-group-text" id="inputGroup-sizing-default">RED</span>
+                                                    <input name="red[0][]" type="text" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default" value="{{ item.red }}">
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="input-group mb-3">
+                                                    <span class="input-group-text" id="inputGroup-sizing-default">GREEN</span>
+                                                    <input name="green[0][]" type="text" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default" value="{{ item.green }}">
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="input-group mb-3">
+                                                    <span class="input-group-text" id="inputGroup-sizing-default">OVERLAP</span>
+                                                    <input name="overlap[0][]" type="text" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default" value="{{ item.overlapping }}">
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        {% endif %}
                     </div>
                     <div class="text-center"><button type="submit" class="btn btn-primary">CONFIRM</button></div>
                 </form>
                 <br />
             </div>
         </div>
+
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+        <script>
+            $(document).ready(function() {
+                $('.nav-tabs a').click(function() {
+                    $(".nav-tabs li.active a button").removeClass("bg-secondary");
+                    $(".nav-tabs li.active").removeClass("active");
+                    $(".tab-pane.active").removeClass("active");
+                    let thisId = $(this).attr("id");
+                    $(this).parent().addClass("active");
+                    $("#" + thisId + " button").addClass("bg-secondary");
+                    $("#tab-" + thisId).addClass("active");
+                });
+            });
+        </script>
     </body>
 </html>

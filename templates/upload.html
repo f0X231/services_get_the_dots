@@ -1,10 +1,78 @@
 <!DOCTYPE html>
 <html>
-    <head></head>
-    <body>
-        <form action="/upload" method="post" enctype="multipart/form-data">
-            <input type="file" name="file" id="file">
-            <button type="submit">Upload</button>
-        </form>
-    </body>
+<head>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        .drop-zone {
+            border: 2px dashed #ccc;
+            border-radius: 5px;
+            padding: 20px;
+            text-align: center;
+            color: #aaa;
+            cursor: pointer;
+        }
+        .drop-zone.dragover {
+            background-color: #f0f0f0;
+            border-color: #999;
+        }
+        #file-list {
+            margin-top: 15px;
+        }
+        #file-list li {
+            list-style-type: none;
+        }
+    </style>
+</head>
+<body>
+    <form action="/upload" method="post" enctype="multipart/form-data">
+        <div class="drop-zone" id="drop-zone">
+            Drag & drop files here or click to select
+        </div>
+        <input type="file" name="files[]" id="file-input" multiple style="display: none;">
+        <ul id="file-list"></ul>
+        <button type="submit">Upload</button>
+    </form>
+
+    <script>
+        const dropZone = document.getElementById('drop-zone');
+        const fileInput = document.getElementById('file-input');
+        const fileList = document.getElementById('file-list');
+
+        // Handle drag events
+        dropZone.addEventListener('dragover', (event) => {
+            event.preventDefault();
+            dropZone.classList.add('dragover');
+        });
+
+        dropZone.addEventListener('dragleave', () => {
+            dropZone.classList.remove('dragover');
+        });
+
+        dropZone.addEventListener('drop', (event) => {
+            event.preventDefault();
+            dropZone.classList.remove('dragover');
+            const files = event.dataTransfer.files;
+            handleFiles(files);
+        });
+
+        // Handle click to open file picker
+        dropZone.addEventListener('click', () => fileInput.click());
+
+        fileInput.addEventListener('change', () => {
+            handleFiles(fileInput.files);
+        });
+
+        // Handle files and display in the list
+        function handleFiles(files) {
+            fileList.innerHTML = ''; // Clear previous list
+            Array.from(files).forEach(file => {
+                const listItem = document.createElement('li');
+                listItem.textContent = file.name;
+                fileList.appendChild(listItem);
+            });
+        }
+    </script>
+</body>
 </html>
